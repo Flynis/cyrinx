@@ -1,10 +1,11 @@
 #ifndef CYRINX_SEARCHER_SEARCHER_H
 #define CYRINX_SEARCHER_SEARCHER_H
 
+#include <string>
 #include <unordered_set>
 
 #include "Alphabet/Alphabet.h"
-#include "Searcher/Dictionary.h"
+#include "Dictionary.h"
 
 namespace cyrinx {
 
@@ -23,7 +24,8 @@ public:
    * maxDistance misspells.
    * @returns set of word indexes in the dictionary.
   */
-  virtual std::unordered_set<int>& search(std::string &word, int maxDistance) = 0;
+  virtual std::unordered_set<int>& search(std::string_view &word, 
+                                          int maxDistance) = 0;
 
   virtual ~Searcher() {}
 };

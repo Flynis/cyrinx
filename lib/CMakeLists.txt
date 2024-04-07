@@ -4,19 +4,21 @@ set( LLVM_LINK_COMPONENTS
   Support
   )
 
+add_subdirectory(Searcher)
+add_subdirectory(Typo)
+
 add_clang_tool(cyrinx
   cyrinx.cpp
   )
 
+target_include_directories(cyrinx PRIVATE .)
+
 clang_target_link_libraries(cyrinx
   PRIVATE
-  clangAST
-  clangBasic
-  clangDriver
+  searcher
+  typo
+
   clangFrontend
-  clangRewriteFrontend
-  clangSerialization
-  clangStaticAnalyzerFrontend
   clangTooling
   clangToolingSyntax
   )

@@ -3,6 +3,8 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 
+#include "Typo/TypoAction.h"
+
 using namespace clang::tooling;
 using namespace llvm;
 using namespace std;
@@ -23,6 +25,13 @@ static cl::opt<string> DictionaryFilename(
   cl::init("dict.txt"),
   cl::cat(CyrinxCategory)
 );
+static cl::opt<string> ExcludedFilename(
+  "e", 
+  cl::desc("Specify file with excluded namespaces"), 
+  cl::value_desc("filename"),
+  cl::init("exclude.txt"),
+  cl::cat(CyrinxCategory)
+);
 
 int main(int argc, const char **argv) {
   llvm::cl::SetVersionPrinter(
@@ -36,5 +45,6 @@ int main(int argc, const char **argv) {
   CommonOptionsParser &optionParser = expectedParser.get();
   ClangTool Tool(optionParser.getCompilations(),
                   optionParser.getSourcePathList());
-  return 0;
+  auto factory = newFrontendActionFactory<cyrinx::TypoAction>();
+  return Tool.run(factory.get());
 }

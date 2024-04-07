@@ -1,18 +1,19 @@
 #ifndef CYRINX_SEARCHER_DICTIONARY_H
 #define CYRINX_SEARCHER_DICTIONARY_H
 
+#include <string>
 #include <vector>
 
 namespace cyrinx {
 
 class Dictionary {
 
-  std::vector<string> words;
+  std::vector<std::string> words;
 
 public:
-  Dictionary(std::string filename);
+  Dictionary(std::string &filename);
 
-  std::vector<string> getWords() { return words; }
+  std::vector<std::string>& getWords() { return words; }
 };
 
 } // namespace cyrinx

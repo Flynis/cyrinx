@@ -1,18 +1,32 @@
 #ifndef CYRINX_SEARCHER_BITAP_SEARCHER_H
 #define CYRINX_SEARCHER_BITAP_SEARCHER_H
 
-#include "Searcher/Searcher.h"
+#include <vector>
+
+#include "Searcher.h"
 
 namespace cyrinx {
 
 class BitapSearcher : public Searcher {
+
+std::vector<int> tableRow;
+
+std::vector<int> wordMask;
+
+int endMask;
+
+int maxDistance;
+
 public:
   BitapSearcher(Alphabet &alphabet, Dictionary &dictionary) 
-    : Searcher(alphabet, dictionary) {}
+    : Searcher(alphabet, dictionary), tableRow(32), wordMask(alphabet.size() + 1) {}
   
-  std::unordered_set<int>& search(std::string &word, int maxDistance) override;
-
-  virtual ~Searcher() {}
+  std::unordered_set<int>& search(std::string_view &word, int maxDistance) override;
+  
+private:
+  int normalizeChar(char ch);
+  bool areClose(size_t len1, size_t len2, size_t eps);
+  bool isSimilarWord(std::string &word);
 };
 
 } // namespace cyrinx
