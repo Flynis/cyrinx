@@ -4,14 +4,13 @@
 #include <string>
 #include <unordered_set>
 
-#include "Alphabet/Alphabet.h"
-#include "Dictionary.h"
+#include "cyrinx/Alphabet/Alphabet.h"
+#include "cyrinx/Searcher/Dictionary.h"
 
 namespace cyrinx {
 
 class Searcher {
 protected:
-
 Alphabet &alphabet;
 
 Dictionary &dictionary;

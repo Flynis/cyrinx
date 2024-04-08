@@ -5,15 +5,19 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 
+#include "cyrinx/Typo/TypoContext.h"
+
 namespace cyrinx {
 
 class TypoVisitor : public clang::RecursiveASTVisitor<TypoVisitor> {
 
-clang::ASTContext &context;
+TypoContext &context;
+
+clang::ASTContext &astContext;
 
 public:
-  explicit TypoVisitor(clang::ASTContext &context)
-    : context(context) {}
+  explicit TypoVisitor(clang::ASTContext &astContext, TypoContext &context)
+    : context(context), astContext(astContext) {}
 
   virtual bool VisitNamedDecl(clang::NamedDecl *decl);
 };

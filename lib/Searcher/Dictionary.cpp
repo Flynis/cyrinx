@@ -1,13 +1,11 @@
-#include "Dictionary.h"
+#include "cyrinx/Searcher/Dictionary.h"
 
-#include <fstream>
-
+using namespace cyrinx;
 using namespace std;
 
-cyrinx::Dictionary::Dictionary(string &filename) {
-  ifstream in(filename);
+Dictionary::Dictionary(istream &input) {
   string word;
-  while (in >> word) {
+  while (input >> word) {
     words.push_back(word);
   }
 }

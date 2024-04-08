@@ -1,6 +1,7 @@
 #ifndef CYRINX_SEARCHER_DICTIONARY_H
 #define CYRINX_SEARCHER_DICTIONARY_H
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -11,9 +12,9 @@ class Dictionary {
 std::vector<std::string> words;
 
 public:
-  Dictionary(std::string &filename);
+  Dictionary(std::istream &input);
 
-  std::vector<std::string>& getWords() const { return words; }
+  std::vector<std::string>& getWords() { return words; }
 };
 
 } // namespace cyrinx

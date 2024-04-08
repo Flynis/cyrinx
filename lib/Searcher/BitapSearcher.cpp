@@ -1,8 +1,9 @@
-#include "BitapSearcher.h"
+#include "cyrinx/Searcher/BitapSearcher.h"
 
+using namespace cyrinx;
 using namespace std;
 
-unordered_set<int>& cyrinx::BitapSearcher::search(string_view &word, int maxDistance) {
+unordered_set<int>& BitapSearcher::search(string_view &word, int maxDistance) {
   this->maxDistance = maxDistance;
   indexes.clear();
   size_t len = word.length();
@@ -20,16 +21,16 @@ unordered_set<int>& cyrinx::BitapSearcher::search(string_view &word, int maxDist
   return indexes;
 }
 
-int cyrinx::BitapSearcher::normalizeChar(char ch) {
+int BitapSearcher::normalizeChar(char ch) {
   int val = alphabet.mapChar(ch);
   return (val < 0) ? alphabet.size() : val;
 }
 
-bool cyrinx::BitapSearcher::areClose(size_t len1, size_t len2, size_t eps) {
+bool BitapSearcher::areClose(size_t len1, size_t len2, size_t eps) {
   return (len1 - len2 <= eps) || (len2 - len1 <= eps); 
 }
 
-bool cyrinx::BitapSearcher::isSimilarWord(std::string &word) {
+bool BitapSearcher::isSimilarWord(string &word) {
   fill(tableRow.begin(), tableRow.end(), 1);
   for (size_t i = 0; i < word.length(); i++) {
     int charMask = wordMask[normalizeChar(word[i])];

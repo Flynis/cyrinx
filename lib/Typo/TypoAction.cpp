@@ -1,23 +1,25 @@
-#include "TypoAction.h"
+#include "cyrinx/Typo/TypoAction.h"
 
-#include "TypoConsumer.h"
+#include "cyrinx/Typo/TypoConsumer.h"
 
+using namespace clang;
 using namespace cyrinx;
+using namespace llvm;
 
 TypoAction::ConsumerPtr TypoAction::CreateASTConsumer(
-    clang::CompilerInstance &compiler, 
-    llvm::StringRef in) 
+    CompilerInstance &compiler, 
+    StringRef in) 
 {
-  return std::make_unique<TypoConsumer>(compiler.getASTContext());
+  return std::make_unique<TypoConsumer>(compiler.getASTContext(), context);
 }
 
-bool TypoAction::BeginSourceFileAction(clang::CompilerInstance &compiler) {
+bool TypoAction::BeginSourceFileAction(CompilerInstance &compiler) {
   ASTFrontendAction::BeginSourceFileAction(compiler);
-  llvm::outs() << "Processing file '" << getCurrentFile() << "' ...\n";
+  outs() << "Processing file '" << getCurrentFile() << "' ...\n";
   return true;
 }
 
 void TypoAction::EndSourceFileAction() {
   ASTFrontendAction::EndSourceFileAction();
-  llvm::outs() << "Finished processing file ...\n";
+  outs() << "Finished processing file ...\n";
 }

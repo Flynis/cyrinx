@@ -1,7 +1,7 @@
-#ifndef CYRINX_SEARCHER_ALPHABET_SIMPLE_ALPHABET_H
-#define CYRINX_SEARCHER_ALPHABET_SIMPLE_ALPHABET_H
+#ifndef CYRINX_ALPHABET_SIMPLE_ALPHABET_H
+#define CYRINX_ALPHABET_SIMPLE_ALPHABET_H
 
-#include "Alphabet/Alphabet.h"
+#include "cyrinx/Alphabet/Alphabet.h"
 
 namespace cyrinx {
 

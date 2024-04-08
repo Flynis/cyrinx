@@ -1,20 +1,18 @@
-#include "TypoContext.h"
+#include "cyrinx/Typo/TypoContext.h"
 
-#include <fstream>
+#include "cyrinx/Alphabet/EnglishAlphabet.h"
+#include "cyrinx/Searcher/BitapSearcher.h"
 
-using namespace std;
 using namespace cyrinx;
+using namespace std;
 
-TypoContext::TypoContext(
-      string &dictPath,
-      string &excludedNamespacesPath) 
-  : dict(dictPath);
-{
-  ifstream in(excludedNamespacesPath);
-  string nspace;
-  while (in >> nspace) {
-    exclNamespaces.insert(nspace);
-    string_view view(nspace.data(), nspace.length());
-    exclNamespacesViews.insert(view);
-  }
+TypoContext::TypoContext(istream &dictStream, istream &namespacesStream) 
+  : alphabet(new EnglishAlphabet()), 
+    dict(dictStream),
+    searcher(new BitapSearcher(*alphabet, dict)),
+    filter(namespacesStream) {}
+
+TypoContext::~TypoContext() {
+  delete searcher;
+  delete alphabet;
 }

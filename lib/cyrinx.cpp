@@ -3,9 +3,14 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 
-#include "Typo/TypoAction.h"
+#include "cyrinx/Typo/TypoAction.h"
+#include "cyrinx/Typo/TypoContext.h"
 
+#include <fstream>
+
+using namespace clang;
 using namespace clang::tooling;
+using namespace cyrinx;
 using namespace llvm;
 using namespace std;
 
@@ -25,13 +30,23 @@ static cl::opt<string> DictionaryPath(
   cl::init("dict.txt"),
   cl::cat(CyrinxCategory)
 );
-static cl::opt<string> ExcludedNamespacesPath(
-  "e", 
+static cl::opt<string> NamespacesPath(
+  "n", 
   cl::desc("Specify file with excluded namespaces"), 
   cl::value_desc("filename"),
-  cl::init("exclude.txt"),
+  cl::init(""),
   cl::cat(CyrinxCategory)
 );
+
+class TypoFrontendActionFactory : public FrontendActionFactory {
+TypoContext &context;
+public:
+  TypoFrontendActionFactory(TypoContext &context) : context(context) {}
+
+  unique_ptr<FrontendAction> create() override {
+    return make_unique<TypoAction>(context);
+  }
+};
 
 int main(int argc, const char **argv) {
   llvm::cl::SetVersionPrinter(
@@ -45,6 +60,17 @@ int main(int argc, const char **argv) {
   CommonOptionsParser &optionParser = expectedParser.get();
   ClangTool Tool(optionParser.getCompilations(),
                   optionParser.getSourcePathList());
-  auto factory = newFrontendActionFactory<cyrinx::TypoAction>();
-  return Tool.run(factory.get());
+  ifstream dictStream(DictionaryPath);
+  if(dictStream.fail()) {
+    errs() << "Dicitonary not found\nTry -d <dictionary> option\n"; 
+    return 0;
+  }
+  ifstream namespacesStream(NamespacesPath);
+  if(!NamespacesPath.empty() && namespacesStream.fail()) {
+    errs() << "File with namespaces not found\nTry -n <filename> option\n"; 
+    return 0;
+  }
+  TypoContext context(DictionaryPath, NamespacesPath);
+  TypoFrontendActionFactory factory(context);
+  return Tool.run(&factory);
 }

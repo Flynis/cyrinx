@@ -1,12 +1,13 @@
 add_clang_library(typo
+  TypoContext.cpp
   TypoVisitor.cpp
   TypoAction.cpp
-  )
 
-target_include_directories(typo PRIVATE .)
+  DEPENDS
+  searcher
+  text
 
-clang_target_link_libraries(typo
-  PRIVATE
+  LINK_LIBS
   clangAST
   clangBasic
   clangDriver

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "Searcher.h"
+#include "cyrinx/Searcher/Searcher.h"
 
 namespace cyrinx {
 
@@ -25,7 +25,9 @@ public:
   
 private:
   int normalizeChar(char ch);
+
   bool areClose(size_t len1, size_t len2, size_t eps);
+  
   bool isSimilarWord(std::string &word);
 };
 
