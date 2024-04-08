@@ -18,14 +18,14 @@ static cl::extrahelp MoreHelp(
   "\t  find path/in/subtree -name '*.cpp'|xargs cyrinx\n"
   "\n"
 ); 
-static cl::opt<string> DictionaryFilename(
+static cl::opt<string> DictionaryPath(
   "d", 
   cl::desc("Specify dictionary filename"), 
   cl::value_desc("dictionary"),
   cl::init("dict.txt"),
   cl::cat(CyrinxCategory)
 );
-static cl::opt<string> ExcludedFilename(
+static cl::opt<string> ExcludedNamespacesPath(
   "e", 
   cl::desc("Specify file with excluded namespaces"), 
   cl::value_desc("filename"),

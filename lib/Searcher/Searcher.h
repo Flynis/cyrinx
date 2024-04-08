@@ -11,9 +11,12 @@ namespace cyrinx {
 
 class Searcher {
 protected:
-  Alphabet &alphabet;
-  Dictionary &dictionary;
-  std::unordered_set<int> indexes;
+
+Alphabet &alphabet;
+
+Dictionary &dictionary;
+
+std::unordered_set<int> indexes;
 
 public:
   Searcher(Alphabet &alphabet, Dictionary &dictionary) 

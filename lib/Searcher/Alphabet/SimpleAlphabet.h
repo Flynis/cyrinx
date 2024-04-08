@@ -7,9 +7,9 @@ namespace cyrinx {
 
 class SimpleAlphabet : public Alphabet {
 
-  char firstChar;
+char firstChar;
 
-  char lastChar;
+char lastChar;
 
 public:
   SimpleAlphabet(char firstChar, char lastChar) {

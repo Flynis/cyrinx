@@ -11,7 +11,9 @@ add_clang_tool(cyrinx
   cyrinx.cpp
   )
 
-target_include_directories(cyrinx PRIVATE .)
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 clang_target_link_libraries(cyrinx
   PRIVATE
