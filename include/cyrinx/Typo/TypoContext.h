@@ -28,6 +28,8 @@ public:
 
   Searcher& getSearcher() { return *searcher; }
 
+  Dictionary& getDictionary() { return dict; }
+
   IdentifierFilter& getIdentifierFilter() { return filter; }
 
   Splitter& getSplitter() {return splitter; }

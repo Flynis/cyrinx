@@ -11,11 +11,7 @@ class IdentifierFilter {
 
 std::unordered_set<std::string> namespaces;
 
-std::unordered_set<std::string> identifiers;
-
 std::unordered_set<std::string_view> namespacesViews;
-
-std::unordered_set<std::string_view> identifiersViews;
 
 public:
   IdentifierFilter(std::istream &input);
@@ -29,7 +25,7 @@ private:
 
   template <typename Key>
   bool containedIn(Key key, std::unordered_set<Key> set) {
-    return uset.find(key) != set.end();
+    return set.find(key) != set.end();
   }
 };
 

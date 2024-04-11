@@ -1,6 +1,8 @@
 #ifndef CYRINX_TYPO_TYPO_VISITOR_H
 #define CYRINX_TYPO_TYPO_VISITOR_H
 
+#include <string>
+
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -20,6 +22,13 @@ public:
     : context(context), astContext(astContext) {}
 
   virtual bool VisitNamedDecl(clang::NamedDecl *decl);
+
+  virtual bool VisitFunctionDecl(clang::FunctionDecl *decl);
+
+  virtual bool VisitVarDecl(clang::VarDecl *decl);
+
+private:
+  bool processIdentifier(std::string &id);
 };
 
 } // namespace cyrinx

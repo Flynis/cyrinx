@@ -1,8 +1,8 @@
 #include "clang/Frontend/FrontendActions.h"
-#include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 
+#include "cyrinx/OptionParser.h"
 #include "cyrinx/Typo/TypoAction.h"
 #include "cyrinx/Typo/TypoContext.h"
 
@@ -15,14 +15,7 @@ using namespace llvm;
 using namespace std;
 
 static cl::OptionCategory CyrinxCategory("cyrinx options");
-static cl::extrahelp CommonHelp(CommonOptionsParser::HelpMessage);
-static cl::extrahelp MoreHelp(
-  "\tFor example, to run cyrinx on all files in a subtree of the\n"
-  "\tsource tree, use:\n"
-  "\n"
-  "\t  find path/in/subtree -name '*.cpp'|xargs cyrinx\n"
-  "\n"
-); 
+static cl::extrahelp CommonHelp(OptionParser::HelpMessage);
 static cl::opt<string> DictionaryPath(
   "d", 
   cl::desc("Specify dictionary filename"), 
@@ -51,15 +44,19 @@ public:
 int main(int argc, const char **argv) {
   llvm::cl::SetVersionPrinter(
       [](llvm::raw_ostream &os) { os << "cyrinx version 1.0.0\n"; });
+
   auto expectedParser = 
-      CommonOptionsParser::create(argc, argv, CyrinxCategory);
+      OptionParser::create(argc, argv, CyrinxCategory);
   if (!expectedParser) {
     errs() << expectedParser.takeError();
     return 1;
   }
-  CommonOptionsParser &optionParser = expectedParser.get();
+  OptionParser &optionParser = expectedParser.get();
   ClangTool Tool(optionParser.getCompilations(),
                   optionParser.getSourcePathList());
+  Tool.appendArgumentsAdjuster(
+        getInsertArgumentAdjuster("-fparse-all-comments", ArgumentInsertPosition::BEGIN));
+
   ifstream dictStream(DictionaryPath);
   if(dictStream.fail()) {
     errs() << "Dicitonary not found\nTry -d <dictionary> option\n"; 
@@ -70,7 +67,8 @@ int main(int argc, const char **argv) {
     errs() << "File with namespaces not found\nTry -n <filename> option\n"; 
     return 0;
   }
-  TypoContext context(DictionaryPath, NamespacesPath);
+  TypoContext context(dictStream, namespacesStream);
+
   TypoFrontendActionFactory factory(context);
   return Tool.run(&factory);
 }

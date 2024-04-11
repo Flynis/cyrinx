@@ -3,11 +3,9 @@ add_clang_library(typo
   TypoVisitor.cpp
   TypoAction.cpp
 
-  DEPENDS
+  LINK_LIBS
   searcher
   text
-
-  LINK_LIBS
   clangAST
   clangBasic
   clangDriver

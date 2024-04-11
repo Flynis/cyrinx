@@ -8,28 +8,22 @@ IdentifierFilter::IdentifierFilter(istream &input) {
   while (input >> nspace) {
     insertStr(nspace, namespaces, namespacesViews);
   }
-  insertStr(string("std"), namespaces, namespacesViews);
-  for (const string &nspace : namespaces) {
-    insertStr(nspace, identifiers, identifiersViews);
-  }
+  string stdNamespace = "std";
+  insertStr(stdNamespace, namespaces, namespacesViews);
 }
 
 bool IdentifierFilter::isValidIdentifier(string &id) {
-  bool hasNameSpace = false;
   int i = id.length() - 1;
-  while (i >= 0 && isalpha(id[i])) {
-    if (id[i] == ':') {
-      hasNameSpace = true;
-      break;
-    }
+  while (i >= 0 && id[i] != ':') {
     i--;
   }
+  bool hasNameSpace = (i >= 0 && id[i] == ':');
   if (!hasNameSpace) {
-    return !containedIn(id, identifiers); // id[0] == '_' || 
+    return !containedIn(id, namespaces); 
   }
   i -= 2;
   size_t len = 0;
-  while(i >= 0) {
+  while (i >= 0) {
     if (id[i] == ':') {
       string_view view(id.data() + i + 1, len);
       if (containedIn(view, namespacesViews)) {
@@ -42,7 +36,7 @@ bool IdentifierFilter::isValidIdentifier(string &id) {
     len++;
     i--;
   }
-  if(len != 0) {
+  if (len > 0) {
     string_view view(id.data(), len);
     if (containedIn(view, namespacesViews)) {
       return false;

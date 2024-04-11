@@ -9,6 +9,7 @@ add_subdirectory(Text)
 add_subdirectory(Typo)
 
 add_clang_tool(cyrinx
+  OptionParser.cpp
   cyrinx.cpp
   )
 
