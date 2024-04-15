@@ -21,14 +21,17 @@ public:
   explicit TypoVisitor(clang::ASTContext &astContext, TypoContext &context)
     : context(context), astContext(astContext) {}
 
-  virtual bool VisitNamedDecl(clang::NamedDecl *decl);
+  virtual bool VisitVarDecl(clang::VarDecl *decl);
 
   virtual bool VisitFunctionDecl(clang::FunctionDecl *decl);
 
-  virtual bool VisitVarDecl(clang::VarDecl *decl);
+  virtual bool VisitTagDecl(clang::TagDecl *decl);
+
+  virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
 private:
-  bool processIdentifier(std::string &id);
+  void processName(std::string &name);
+  void processDeclContext(clang::DeclContext *declContext);
 };
 
 } // namespace cyrinx

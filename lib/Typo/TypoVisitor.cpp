@@ -4,95 +4,107 @@
 
 #include "cyrinx/Text/IdentifierFilter.h"
 #include "cyrinx/Text/Splitter.h"
+#include "cyrinx/Text/Support.h"
 
 using namespace clang;
 using namespace cyrinx;
 using namespace llvm;
 using namespace std;
 
-bool TypoVisitor::VisitNamedDecl(NamedDecl *decl) {
-  IdentifierInfo *idInfo = decl->getIdentifier();
-  if (decl->isInStdNamespace() || !idInfo) {
+bool TypoVisitor::VisitFunctionDecl(FunctionDecl *decl) {
+  if (!decl->getIdentifier() || decl->isExternC()) {
+    // skip
     return true;
   }
-  return true;
-  DeclContext *ctx = decl->getDeclContext();
   IdentifierFilter &filter = context.getIdentifierFilter();
-  while(!ctx->isFileContext()) {
-    if(ctx->isNamespace()) {
-      NamespaceDecl *spaceDecl = cast<NamespaceDecl>(ctx);
-      string spaceName = spaceDecl->getNameAsString();
-      outs() << "Space " << spaceName << '\n';
-      if(!filter.isValidIdentifier(spaceName)) {
-        return true;
-      }
-    }
-    ctx = ctx->getParent();
-  }
   string name = decl->getQualifiedNameAsString();
-  if(name[0] == '_') {
-    decl->dump(outs());
+  if (filter.isValidFunctionName(name)) {
+    outs() << "Function " << name << " valid\n";
+    processName(name);
+    processDeclContext(decl);
   }
-  return processIdentifier(name);
+  return true;
 }
 
-bool TypoVisitor::VisitFunctionDecl(FunctionDecl *decl) {
-  IdentifierInfo *idInfo = decl->getIdentifier();
-  if (!idInfo) {
+bool TypoVisitor::VisitTagDecl(TagDecl *decl) { 
+  if(isa<ClassTemplateSpecializationDecl>(decl) || !decl->getIdentifier()) {
+    // skip
     return true;
   }
-  return true;
   string name = decl->getQualifiedNameAsString();
-  outs() << "Function\n" << processIdentifier(name);
-  if (processIdentifier(name)) {
-    outs() << "valid func\n";
-    for (auto iter = decl->param_begin(); iter != decl->param_end(); iter++) {
-      ParmVarDecl *parmDecl = *iter;
-      IdentifierInfo *parmInfo = parmDecl->getIdentifier();
-      if (parmInfo) {
-        string parmName = parmDecl->getNameAsString();
-        outs() << processIdentifier(parmName);
-      }
-    }
+  IdentifierFilter &filter = context.getIdentifierFilter();
+  if (filter.isValidGlobalTag(name)) {
+    outs() << "Tag " << name << " valid\n";
+    processName(name);
+    processDeclContext(decl);
+  }
+  return true; 
+}
+
+bool TypoVisitor::VisitNamespaceDecl(NamespaceDecl *decl) {
+  if(!decl->getIdentifier()) {
+    // skip
+    return true;
+  }
+  string name = decl->getQualifiedNameAsString();
+  IdentifierFilter &filter = context.getIdentifierFilter();
+  if (filter.isValidQualifiedName(name)) {
+    outs() << "Namespace " << name << " valid\n";
+    processName(name);
+    processDeclContext(decl);
   }
   return true;
 }
 
 bool TypoVisitor::VisitVarDecl(VarDecl *decl) {
-  IdentifierInfo *idInfo = decl->getIdentifier();
-  if (!idInfo) {
+  if(!decl->isFileVarDecl() || decl->isExternC()) {
+    // skip
     return true;
   }
-  return true;
   string name = decl->getQualifiedNameAsString();
-  if (!isa<ParmVarDecl>(decl)) {
-    outs() << "Var\n" << processIdentifier(name);
+  IdentifierFilter &filter = context.getIdentifierFilter();
+  if (filter.isValidQualifiedName(name)) {
+    outs() << "Var " << name << " valid\n";
+    processName(name);
   }
   return true;
 }
 
-bool TypoVisitor::processIdentifier(string &id) {
-  IdentifierFilter &filter = context.getIdentifierFilter();
-  // if (!filter.isValidIdentifier(id)) {
-  //   return true;
-  // }
+void TypoVisitor::processName(std::string &name) {
   Splitter &splitter = context.getSplitter();
-  string basename = splitter.getIdentifierName(id);
+  string basename = splitter.getIdentifierName(name);
+  if(StrStartsWith(basename, IdentifierFilter::stdguard)) {
+    return;
+  }
   auto &words = splitter.splitIdentifier(basename);
-  outs() << "Identifier: " << id << ' ' << basename << '\n';
+  outs() << "Identifier: " << name << ' ' << basename << '\n';
   Searcher &searcher = context.getSearcher();
   auto &dict = context.getDictionary().getWords();
   const int maxDistance = 2;
-  for (auto &w : words) {
-    outs() << w << '\n';
-    if(w.length() >= maxDistance) {
-      auto &variants = searcher.search(w, maxDistance);
-      // outs() << "variants\n";
-      // for(auto &variant : variants) {
-      //   outs() << dict[variant] << ' ';
-      // }
+  // for (auto &w : words) {
+  //   outs() << w << '\n';
+  //   if(w.length() >= maxDistance) {
+  //     auto &variants = searcher.search(w, maxDistance);
+  //     // outs() << "variants\n";
+  //     // for(auto &variant : variants) {
+  //     //   outs() << dict[variant] << ' ';
+  //     // }
+  //   }
+  // }
+  outs() << '\n';
+}
+
+void TypoVisitor::processDeclContext(DeclContext *declContext) {
+  for (auto iter = declContext->decls_begin(); iter != declContext->decls_end(); iter++) {
+    Decl *decl = *iter;
+    NamedDecl *namedDecl = dyn_cast<NamedDecl>(decl);
+    if(!namedDecl) {
+      continue;
+    }
+    IdentifierInfo *idInfo = namedDecl->getIdentifier();
+    if (idInfo) {
+      string name = namedDecl->getNameAsString();
+      processName(name);
     }
   }
-  outs() << '\n';
-  return true;
 }
