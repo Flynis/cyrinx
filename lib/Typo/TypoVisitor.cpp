@@ -19,7 +19,7 @@ bool TypoVisitor::VisitFunctionDecl(FunctionDecl *decl) {
   IdentifierFilter &filter = context.getIdentifierFilter();
   string name = decl->getQualifiedNameAsString();
   if (filter.isValidFunctionName(name)) {
-    outs() << "Function " << name << " valid\n";
+    //outs() << "Function " << name << " valid\n";
     processName(name);
     processDeclContext(decl);
   }
@@ -34,7 +34,7 @@ bool TypoVisitor::VisitTagDecl(TagDecl *decl) {
   string name = decl->getQualifiedNameAsString();
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidGlobalTag(name)) {
-    outs() << "Tag " << name << " valid\n";
+    //outs() << "Tag " << name << " valid\n";
     processName(name);
     processDeclContext(decl);
   }
@@ -49,7 +49,7 @@ bool TypoVisitor::VisitNamespaceDecl(NamespaceDecl *decl) {
   string name = decl->getQualifiedNameAsString();
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidQualifiedName(name)) {
-    outs() << "Namespace " << name << " valid\n";
+    //outs() << "Namespace " << name << " valid\n";
     processName(name);
     processDeclContext(decl);
   }
@@ -64,7 +64,7 @@ bool TypoVisitor::VisitVarDecl(VarDecl *decl) {
   string name = decl->getQualifiedNameAsString();
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidQualifiedName(name)) {
-    outs() << "Var " << name << " valid\n";
+    //outs() << "Var " << name << " valid\n";
     processName(name);
   }
   return true;
@@ -77,21 +77,21 @@ void TypoVisitor::processName(std::string &name) {
     return;
   }
   auto &words = splitter.splitIdentifier(basename);
-  outs() << "Identifier: " << name << ' ' << basename << '\n';
+  //outs() << "Identifier: " << name << ' ' << basename << '\n';
+  StrToLower(basename);
   Searcher &searcher = context.getSearcher();
   auto &dict = context.getDictionary().getWords();
-  const int maxDistance = 2;
-  // for (auto &w : words) {
-  //   outs() << w << '\n';
-  //   if(w.length() >= maxDistance) {
-  //     auto &variants = searcher.search(w, maxDistance);
-  //     // outs() << "variants\n";
-  //     // for(auto &variant : variants) {
-  //     //   outs() << dict[variant] << ' ';
-  //     // }
-  //   }
-  // }
-  outs() << '\n';
+  const unsigned maxDistance = 2;
+  for (auto &w : words) {
+    if(w.length() > maxDistance) {
+      outs() << w << '\n';
+      auto &variants = searcher.search(w, maxDistance);
+      for(auto &variant : variants) {
+        outs() << dict[variant] << ' ';
+      }
+      outs() << '\n';
+    }
+  }
 }
 
 void TypoVisitor::processDeclContext(DeclContext *declContext) {

@@ -17,6 +17,8 @@ bool StrStartsWith(const std::string_view &s, const std::string_view &prefix);
 
 bool StrContainsChar(const std::string &s, char ch);
 
+void StrToLower(std::string &s);
+
 } // namespace cyrinx
 
 #endif // CYRINX_TEXT_SUPPORT_H

@@ -1,5 +1,7 @@
 #include "cyrinx/Text/Support.h"
 
+#include <algorithm>
+
 using namespace std;
 
 bool cyrinx::StrStartsWith(const string &s, const string_view &prefix) {
@@ -26,4 +28,9 @@ bool cyrinx::StrStartsWith(const string_view &s, const string_view &prefix) {
 
 bool cyrinx::StrContainsChar(const string &s, char ch) {
   return s.find_last_of(ch) != string::npos;
+}
+
+void cyrinx::StrToLower(string &s) {
+  transform(s.begin(), s.end(), s.begin(),
+    [](unsigned char c){ return tolower(c); });
 }

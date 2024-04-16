@@ -9,22 +9,26 @@ namespace cyrinx {
 
 class BitapSearcher : public Searcher {
 
-std::vector<int> tableRow;
+static constexpr size_t maxWordLength = 32;
 
-std::vector<int> wordMask;
+std::vector<unsigned int> tableRow;
 
-int endMask;
+std::vector<unsigned int> wordMask;
 
-int maxDistance;
+unsigned int endMask;
+
+unsigned int maxDistance;
 
 public:
   BitapSearcher(Alphabet &alphabet, Dictionary &dictionary) 
-    : Searcher(alphabet, dictionary), tableRow(32), wordMask(alphabet.size() + 1) {}
+    : Searcher(alphabet, dictionary), 
+      tableRow(maxWordLength + 1), 
+      wordMask(alphabet.size() + 1) {}
   
-  std::unordered_set<int>& search(std::string_view &word, int maxDistance) override;
+  std::unordered_set<int>& search(std::string_view &word, unsigned maxDistance) override;
   
 private:
-  int normalizeChar(char ch);
+  unsigned normalizeChar(char ch);
 
   bool areClose(size_t len1, size_t len2, size_t eps);
   

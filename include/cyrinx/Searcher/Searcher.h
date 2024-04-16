@@ -27,7 +27,7 @@ public:
    * @returns set of word indexes in the dictionary.
   */
   virtual std::unordered_set<int>& search(std::string_view &word, 
-                                          int maxDistance) = 0;
+                                          unsigned maxDistance) = 0;
 
   virtual ~Searcher() {}
 };
