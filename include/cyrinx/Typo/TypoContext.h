@@ -6,6 +6,7 @@
 #include "cyrinx/Alphabet/Alphabet.h"
 #include "cyrinx/Searcher/Dictionary.h"
 #include "cyrinx/Searcher/Searcher.h"
+#include "cyrinx/Searcher/Metric.h"
 #include "cyrinx/Text/IdentifierFilter.h"
 #include "cyrinx/Text/Splitter.h"
 
@@ -16,6 +17,8 @@ class TypoContext {
 Alphabet *alphabet;
 
 Dictionary dict;
+
+Metric *metric;
 
 Searcher *searcher;
 

@@ -6,6 +6,7 @@
 
 #include "cyrinx/Alphabet/Alphabet.h"
 #include "cyrinx/Searcher/Dictionary.h"
+#include "cyrinx/Searcher/SearchResult.h"
 
 namespace cyrinx {
 
@@ -15,7 +16,7 @@ Alphabet &alphabet;
 
 Dictionary &dictionary;
 
-std::unordered_set<int> indexes;
+std::unordered_set<SearchResult> indexes;
 
 public:
   Searcher(Alphabet &alphabet, Dictionary &dictionary) 
@@ -26,8 +27,8 @@ public:
    * maxDistance misspells.
    * @returns set of word indexes in the dictionary.
   */
-  virtual std::unordered_set<int>& search(std::string_view &word, 
-                                          unsigned maxDistance) = 0;
+  virtual std::unordered_set<SearchResult>& search(std::string_view &word, 
+                                                    unsigned maxDistance) = 0;
 
   virtual ~Searcher() {}
 };

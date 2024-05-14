@@ -30,7 +30,7 @@ public:
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
 private:
-  void processName(std::string &name);
+  void processName(std::string &name, clang::NamedDecl *decl);
   void processDeclContext(clang::DeclContext *declContext);
 };
 

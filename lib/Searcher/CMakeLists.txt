@@ -1,4 +1,6 @@
 add_clang_library(searcher
   Dictionary.cpp
-  BitapSearcher.cpp
+  SearchResult.cpp
+  DamerauLevensteinMetric.cpp
+  MetricSearcher.cpp
   )

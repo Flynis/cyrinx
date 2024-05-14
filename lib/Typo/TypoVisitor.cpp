@@ -2,11 +2,14 @@
 
 #include <string>
 
+#include <clang/Tooling/Core/Diagnostic.h>
+
 #include "cyrinx/Text/IdentifierFilter.h"
 #include "cyrinx/Text/Splitter.h"
 #include "cyrinx/Text/Support.h"
 
 using namespace clang;
+using namespace clang::tooling;
 using namespace cyrinx;
 using namespace llvm;
 using namespace std;
@@ -20,7 +23,7 @@ bool TypoVisitor::VisitFunctionDecl(FunctionDecl *decl) {
   string name = decl->getQualifiedNameAsString();
   if (filter.isValidFunctionName(name)) {
     //outs() << "Function " << name << " valid\n";
-    processName(name);
+    processName(name, decl);
     processDeclContext(decl);
   }
   return true;
@@ -35,7 +38,7 @@ bool TypoVisitor::VisitTagDecl(TagDecl *decl) {
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidGlobalTag(name)) {
     //outs() << "Tag " << name << " valid\n";
-    processName(name);
+    processName(name, decl);
     processDeclContext(decl);
   }
   return true; 
@@ -50,7 +53,7 @@ bool TypoVisitor::VisitNamespaceDecl(NamespaceDecl *decl) {
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidQualifiedName(name)) {
     //outs() << "Namespace " << name << " valid\n";
-    processName(name);
+    processName(name, decl);
     processDeclContext(decl);
   }
   return true;
@@ -65,12 +68,12 @@ bool TypoVisitor::VisitVarDecl(VarDecl *decl) {
   IdentifierFilter &filter = context.getIdentifierFilter();
   if (filter.isValidQualifiedName(name)) {
     //outs() << "Var " << name << " valid\n";
-    processName(name);
+    processName(name, decl);
   }
   return true;
 }
 
-void TypoVisitor::processName(std::string &name) {
+void TypoVisitor::processName(std::string &name, NamedDecl *decl) {
   Splitter &splitter = context.getSplitter();
   string basename = splitter.getIdentifierName(name);
   if(StrStartsWith(basename, IdentifierFilter::stdguard)) {
@@ -80,16 +83,32 @@ void TypoVisitor::processName(std::string &name) {
   //outs() << "Identifier: " << name << ' ' << basename << '\n';
   StrToLower(basename);
   Searcher &searcher = context.getSearcher();
-  auto &dict = context.getDictionary().getWords();
+  //auto &dict = context.getDictionary().getWords();
   const unsigned maxDistance = 2;
   for (auto &w : words) {
     if(w.length() > maxDistance) {
-      outs() << w << '\n';
       auto &variants = searcher.search(w, maxDistance);
+      bool isEqual = false;
       for(auto &variant : variants) {
-        outs() << dict[variant] << ' ';
+        if(variant.distance == 0) {
+          isEqual = true;
+          break;
+        }
       }
-      outs() << '\n';
+      if(!isEqual) {
+        // outs() << w << '\n';
+        // outs() << "dict variants\n";
+        // for(auto &variant : variants) {
+        //   outs() << dict[variant.dictionaryIndex] << ' ';
+        // }
+        // outs() << '\n';
+        SourceLocation loc = decl->getLocation();
+        
+        loc.dump(astContext.getSourceManager());
+        //string message = "Typo in word '" + w + "'";
+        //DiagnosticMessage msg(StringRef(message), astContext.getSourceManager(), decl->getLocation());
+        outs() << "\t\tTypo in word '" << w << "'\n";
+      }
     }
   }
 }
@@ -104,7 +123,7 @@ void TypoVisitor::processDeclContext(DeclContext *declContext) {
     IdentifierInfo *idInfo = namedDecl->getIdentifier();
     if (idInfo) {
       string name = namedDecl->getNameAsString();
-      processName(name);
+      processName(name, namedDecl);
     }
   }
 }

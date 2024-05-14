@@ -15,11 +15,11 @@ TypoAction::ConsumerPtr TypoAction::CreateASTConsumer(
 
 bool TypoAction::BeginSourceFileAction(CompilerInstance &compiler) {
   ASTFrontendAction::BeginSourceFileAction(compiler);
-  outs() << "Processing file '" << getCurrentFile() << "' ...\n";
+  //outs() << "Processing file '" << getCurrentFile() << "' ...\n";
   return true;
 }
 
 void TypoAction::EndSourceFileAction() {
   ASTFrontendAction::EndSourceFileAction();
-  outs() << "Finished processing file ...\n";
+  //outs() << "Finished processing file ...\n";
 }
